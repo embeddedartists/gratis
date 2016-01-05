@@ -31,7 +31,12 @@ case $1 in
   (start)
     log_daemon_msg "Starting EPD" "epd_fuse"
     mkdir -p "${EPD_MOUNTPOINT}"
-    modprobe spi-bcm2708
+    if [ ! -e "/dev/spidev0.0" ]; then
+       modprobe spi-bcm2835 || modprobe spi-bcm2708
+       if [ ! -e "/dev/spidev0.0" ]; then
+          modprobe spi-bcm2708
+       fi
+    fi
     "${DAEMON}" --panel="${EPD_SIZE}" ${EPD_OPTS} "${EPD_MOUNTPOINT}"
     log_end_msg "$?"
     ;;
