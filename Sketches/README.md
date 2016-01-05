@@ -1,4 +1,17 @@
-# Code
+# E-Ink for Arduino
+
+Table of contents
+
+* [Introduction](#introduction)
+* [Connecting Arduino to the ePaper Board](#connecting-arduino-to-the-epaper-board)
+* [Development Tools](#development-tools)
+* [Libraries](#libraries)
+* [Example Programs](#example-programs)
+  * [Demo Sketch](#demo-sketch)
+  * [Command Sketch](#command-sketch)
+  * [Flash Loader Sketch](#flash-loader-sketch)
+
+## Introduction
 
 This project officially supports the Arduino-based platform. The Ti LaunchPad support that is 
 available in the original [repaper/gratis](https://github.com/repaper/gratis) repository 
@@ -7,24 +20,59 @@ has been commented out and is completely untested.
 The examples have been verified on [Arduino Leonardo](http://arduino.cc/en/Main/ArduinoBoardLeonardo) (R3) and [Arduino Uno](http://arduino.cc/en/Main/ArduinoBoardUno) (R2) boards using
 the 1.0.5 version of the IDE.
 
-## Source Code Repository
+## Connecting Arduino to the ePaper Board
 
-The source code for the Repaper software is hosted by
-[GitHub](https://github.com/embeddedartists/gratis). The [example programs](#example-programs) are in
-[Sketches](https://github.com/embeddedartists/gratis/tree/master/Sketches) directory.
+> See: Schematics for the [2.7 inch E-paper Display Module](http://www.embeddedartists.com/products/displays/lcd_27_epaper.php), Arduino Leonardo ([PDF](http://arduino.cc/en/uploads/Main/arduino-leonardo-schematic_3b.pdf)) and Arduino Uno ([PDF](http://arduino.cc/en/uploads/Main/Arduino_Uno_Rev3-schematic.pdf))
+
+The display module have two 14-pin connectors (J2 is 50mil and J3 is 100mil) and one 26-pin
+connector (J5). Any one of them can be used to connect the display board to the Arduino board.
+
+One way to connect the display module is to use [jumper wires](http://www.embeddedartists.com/products/acc/acc_wire_fm.php). The table below shows where each wire should be connected:
+
+<table>
+  <tr><th colspan="2">Arduino Leonardo</th><th colspan="2">Arduino Uno</th><th colspan="2">Arduino Mega 2560</th><th colspan="2">Display, 14-pin connector</th></tr>
+  <tr><th>Pin #</th><th>Signal</th><th>Pin #</th><th>Signal</th><th>Pin #</th><th>Signal</th><th>Pin #</th><th>Signal</th></tr>
+  <tr><td>GND</td><td>GND</td>     <td>GND</td><td>GND</td>     <td>GND</td><td>GND</td>  <td>1</td><td>GND</td></tr>
+  <tr><td>3V3</td><td>3V3</td>     <td>3V3</td><td>3V3</td>     <td>3V3</td><td>3V3</td>  <td>2</td><td>3V3</td></tr>
+  <tr><td>ICSP-3</td><td>SCK</td>  <td>ICSP-3</td><td>SCK</td>  <td>52</td><td>SCK</td>   <td>3</td><td>SCK</td></tr>
+  <tr><td>ICSP-4</td><td>MOSI</td> <td>ICSP-4</td><td>MOSI</td> <td>51</td><td>MOSI</td>  <td>4</td><td>MOSI</td></tr>
+  <tr><td>ICSP-1</td><td>MISO</td> <td>ICSP-1</td><td>MISO</td> <td>50</td><td>MISO</td>  <td>5</td><td>MISO</td></tr>
+  <tr><td>8</td><td>GPIO</td>      <td>8</td><td>GPIO</td>      <td>8</td><td>GPIO</td>   <td>6</td><td>SSEL</td></tr>
+  <tr><td>7</td><td>GPIO</td>      <td>7</td><td>GPIO</td>      <td>7</td><td>GPIO</td>   <td>7</td><td>Busy</td></tr>
+  <tr><td>10</td><td>GPIO</td>     <td>10</td><td>GPIO</td>     <td>10</td><td>GPIO</td>  <td>8</td><td>Border Ctrl</td></tr>
+  <tr><td>SCL/3</td><td>SCL</td>   <td>SCL/A5</td><td>SCL</td>  <td>21</td><td>SCL</td>   <td>9</td><td>SCL</td></tr>
+  <tr><td>SDA/2</td><td>SDA</td>   <td>SCL/A4</td><td>SDA</td>  <td>20</td><td>SDA</td>   <td>10</td><td>SDA</td></tr>
+  <tr><td>9</td><td>GPIO</td>      <td>9</td><td>GPIO</td>      <td>9</td><td>GPIO</td>   <td>11</td><td>CS Flash</td></tr>
+  <tr><td>6</td><td>GPIO</td>      <td>6</td><td>GPIO</td>      <td>6</td><td>GPIO</td>   <td>12</td><td>Reset</td></tr>
+  <tr><td>5</td><td>GPIO</td>      <td>5</td><td>GPIO</td>      <td>5</td><td>GPIO</td>   <td>13</td><td>Pwr</td></tr>
+  <tr><td>4</td><td>GPIO</td>      <td>4</td><td>GPIO</td>      <td>4</td><td>GPIO</td>   <td>14</td><td>Discharge</td></tr>
+</table>
+
+The only difference in pinning between the Leonardo and Uno boards is where to connect the I2C/Wire pins (SDA/SCL).
 
 
 ## Development Tools
 
 This project officially supports the Arduino-based platform.
 
-### Arduino
-
 The [Arduino web site](http://www.arduino.cc) has download links for
 Windows, Mac OS/X and other operating systems.
 
 Note: [Java](http://java.com) is necessary to run the GUI, but it is
 possible to install a command line only version.
+
+## Libraries
+
+> Link to the [libraries source](https://github.com/embeddedartists/gratis/tree/master/Sketches/libraries).
+(copy all of these to you local libraries folder)
+
+* **Images** - Sample XBM files.  The demo program includes two of
+  these directly.  The Command program can use these files for its
+  upload command.
+* **FLASH** - Driver for the SPI FLASH chip on the EPD eval board.
+* **EPD2** - E-Ink Panel driver (COG V2) *experimental*.
+* **LM75** - Temperature sensor driver.
+
 
 # Example Programs
 
@@ -131,48 +179,3 @@ above you will have to upload the program four times to the Arduino:
 2. `DISPLAY_LIST` not defined, `IMAGE` is e.g. *cat*, `FLASH_SECTOR` is *2*
 3. `DISPLAY_LIST` not defined, `IMAGE` is e.g. *venus*, `FLASH_SECTOR` is *4*
 4. `DISPLAY_LIST` defined and set to *{0, 3000}, {2, 3000}, {4, 3000}*
-
-
-## Libraries
-
-> Link to the [libraries source](https://github.com/embeddedartists/gratis/tree/master/Sketches/libraries).
-(copy all of these to you local libraries folder)
-
-* **Images** - Sample XBM files.  The demo program includes two of
-  these directly.  The Command program can use these files for its
-  upload command.
-* **FLASH** - Driver for the SPI FLASH chip on the EPD eval board.
-* **EPD2** - E-Ink Panel driver (COG V2) *experimental*.
-* **LM75** - Temperature sensor driver.
-
-
-# Connection of 2.7 inch E-paper Display Module to Arduino
-
-> See: Schematics for the [2.7 inch E-paper Display Module](http://www.embeddedartists.com/products/displays/lcd_27_epaper.php), Arduino Leonardo ([PDF](http://arduino.cc/en/uploads/Main/arduino-leonardo-schematic_3b.pdf)) and Arduino Uno ([PDF](http://arduino.cc/en/uploads/Main/Arduino_Uno_Rev3-schematic.pdf))
-
-The display module have two 14-pin connectors (J2 is 50mil and J3 is 100mil) and one 26-pin
-connector (J5). Any one of them can be used to connect the display board to the Arduino board.
-
-One way to connect the display module is to use [jumper wires](http://www.embeddedartists.com/products/acc/acc_wire_fm.php). The table below shows where each wire should be connected:
-
-<table>
-  <tr><th colspan="2">Arduino Leonardo</th><th colspan="2">Arduino Uno</th><th colspan="2">Arduino Mega 2560</th><th colspan="2">Display, 14-pin connector</th></tr>
-  <tr><th>Pin #</th><th>Signal</th><th>Pin #</th><th>Signal</th><th>Pin #</th><th>Signal</th><th>Pin #</th><th>Signal</th></tr>
-  <tr><td>GND</td><td>GND</td>     <td>GND</td><td>GND</td>     <td>GND</td><td>GND</td>  <td>1</td><td>GND</td></tr>
-  <tr><td>3V3</td><td>3V3</td>     <td>3V3</td><td>3V3</td>     <td>3V3</td><td>3V3</td>  <td>2</td><td>3V3</td></tr>
-  <tr><td>ICSP-3</td><td>SCK</td>  <td>ICSP-3</td><td>SCK</td>  <td>52</td><td>SCK</td>   <td>3</td><td>SCK</td></tr>
-  <tr><td>ICSP-4</td><td>MOSI</td> <td>ICSP-4</td><td>MOSI</td> <td>51</td><td>MOSI</td>  <td>4</td><td>MOSI</td></tr>
-  <tr><td>ICSP-1</td><td>MISO</td> <td>ICSP-1</td><td>MISO</td> <td>50</td><td>MISO</td>  <td>5</td><td>MISO</td></tr>
-  <tr><td>8</td><td>GPIO</td>      <td>8</td><td>GPIO</td>      <td>8</td><td>GPIO</td>   <td>6</td><td>SSEL</td></tr>
-  <tr><td>7</td><td>GPIO</td>      <td>7</td><td>GPIO</td>      <td>7</td><td>GPIO</td>   <td>7</td><td>Busy</td></tr>
-  <tr><td>10</td><td>GPIO</td>     <td>10</td><td>GPIO</td>     <td>10</td><td>GPIO</td>  <td>8</td><td>Border Ctrl</td></tr>
-  <tr><td>SCL/3</td><td>SCL</td>   <td>SCL/A5</td><td>SCL</td>  <td>21</td><td>SCL</td>   <td>9</td><td>SCL</td></tr>
-  <tr><td>SDA/2</td><td>SDA</td>   <td>SCL/A4</td><td>SDA</td>  <td>20</td><td>SDA</td>   <td>10</td><td>SDA</td></tr>
-  <tr><td>9</td><td>GPIO</td>      <td>9</td><td>GPIO</td>      <td>9</td><td>GPIO</td>   <td>11</td><td>CS Flash</td></tr>
-  <tr><td>6</td><td>GPIO</td>      <td>6</td><td>GPIO</td>      <td>6</td><td>GPIO</td>   <td>12</td><td>Reset</td></tr>
-  <tr><td>5</td><td>GPIO</td>      <td>5</td><td>GPIO</td>      <td>5</td><td>GPIO</td>   <td>13</td><td>Pwr</td></tr>
-  <tr><td>4</td><td>GPIO</td>      <td>4</td><td>GPIO</td>      <td>4</td><td>GPIO</td>   <td>14</td><td>Discharge</td></tr>
-</table>
-
-The only difference in pinning between the Leonardo and Uno boards is where to connect the I2C/Wire pins (SDA/SCL).
-
