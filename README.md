@@ -15,17 +15,17 @@ The following changes have been made:
 
 ## Sketches
 
-These are example programs that will compile and run on the following platforms
+The [Sketches](Sketches) folder contain example programs that will compile and run on the following platforms
 
 1. Arduino Leonardo using the [Arduino](http://arduino.cc) IDE
 2. Arduino Uno using the [Arduino](http://arduino.cc) IDE
 
 ## PlatformWithOS
 
-Contains an example driver and Python demo programs that can be
+The [PlatformWithOS](PlatformWithOS) folder contain contains an example driver and Python demo programs that can be
 compiled and run on:
 
-1. [Raspberry Pi](http://www.raspberrypi.org/).
+1. [Raspberry Pi](http://www.raspberrypi.org/)
 
 ======
 
