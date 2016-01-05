@@ -1,12 +1,28 @@
-#  E-Ink Driver for: Raspberry Pi
+# E-Ink Driver for: Raspberry Pi
 
-# Driver Programs - Directory "driver-common"
+Table of contents
 
-* epd_test - test program for direct driving EPD panel
-* epd_fuse - present EPD as a file for easy control
+* [Prerequisites](#prerequisites)
+* [Preparations](#preparations)
+* [Connecting Raspberry Pi to the ePaper board](#connecting-raspberry-pi-to-the-epaper-board)
+  * [Raspberry Pi 2, A+ and B+ models](#raspberry-pi-2-a-and-b-models)
+  * [Raspberry Pi A and B models](#raspberry-pi-a-and-b-models)
+* [Standalone EPD Test Program](#standalone-epd-test-program)
+* [EPD Driver](#epd-driver)
+  * [Starting EPD Driver at Boot](#starting-epd-driver-at-boot)
+* [Python Examples](#python-demo-programs---directory-demo)
+  * [Drawing Demo](#drawing-demo)
+  * [Image Demo](#image-demo)
+  * [Image Demo with button](#image-demo-with-button)
+  * [Partial Demo](#partial-demo)
+  * [Counter Demo](#counter-demo)
+  * [Clock Demo 1](#clock-demo-1)
+  * [Clock Demo 2](#clock-demo-2)
+  * [IP Address Demo](#ip-address-demo)
+  * [Barcode Demo](#barcode-demo)
 
 
-# Prerequisites
+## Prerequisites
 
 The code in this repository is **ONLY VALID** on ePaper modules that are **rev D** and have the **EM027BS013** display mounted.
 To see what your module has, look at the back of it:
@@ -48,10 +64,32 @@ The A and B models come with 26 gpio pins. You can use a 26-pin ribbon cable and
 
 Note that the keying must be as shown in the images for the pins to align correctly.
 
-## Compiling
+## Standalone EPD Test Program
 
-These test programs should compile with no additional libraries, but
-the EPD driver needs the fuse development library installed.
+This will first clear the panel then display a series of images (all
+2.7" images from Arduino example).  This need the Linux SPI module
+installed. 
+
+Start by loading the SPI module. Old installations of Raspbian Wheezy use
+the `spi-bcm2708` module, while newer installations of Raspbian Wheezy and
+Raspbian Jessie use `spi-bcm2835`. Load the version that you need:
+
+~~~~~
+sudo modprobe spi-bcm2708
+~~~~~
+
+
+Build and run using:
+
+~~~~~
+COG_VERSION=V2 make rpi-epd_test
+sudo ./driver-common/epd_test 2.7
+~~~~~
+
+
+## EPD Driver
+
+The EPD driver needs the fuse development library installed.
 
 ~~~~~
 # Raspberry Pi
@@ -59,24 +97,7 @@ sudo apt-get install libfuse-dev
 ~~~~~
 
 
-### EPD Test
-
-This will first clear the panel then display a series of images (all
-2.7" images from Arduino example).  This need the Linux SPI module
-installed.
-
-#### Raspberry Pi: Build and run using:
-
-~~~~~
-sudo modprobe spi-bcm2708
-COG_VERSION=V2 make rpi-epd_test
-sudo ./driver-common/epd_test 2.7
-~~~~~
-
-
-### EPD fuse
-
-This allows the display to be represented as a virtual director of files, which are:
+The EPD driver allows the display to be represented as a virtual director of files, which are:
 
 ~~~~~
 File         Read/Write   Description
@@ -111,11 +132,18 @@ Notes:
   since it fits better with the Imaging library used.
 
 
+Start by loading the SPI module. Old installations of Raspbian Wheezy use
+the `spi-bcm2708` module, while newer installations of Raspbian Wheezy and
+Raspbian Jessie use `spi-bcm2835`. Load the version that you need:
+
+~~~~~
+sudo modprobe spi-bcm2708
+~~~~~
+
 Build and run using:
 
 ~~~~~
 COG_VERSION=V2 make rpi-epd_fuse
-sudo modprobe spi-bcm2708
 sudo mkdir /tmp/epd
 sudo ./driver-common/epd_fuse --panel=2.7 -o allow_other -o default_permissions /tmp/epd
 ~~~~~
@@ -148,14 +176,20 @@ sudo rmdir /tmp/epd
 ~~~~~
 
 
-# Starting EPD FUSE at Boot
+### Starting EPD Driver at Boot
 
-Need to install the startup script in `/etc/init.d` and install the
-EPD FUSE program in `/usr/sbin`, there is a make target that does this.
+To have the EPD driver loaded automatically after a reboot, a startup script 
+must be installed in in `/etc/init.d` and the driver must be installed in `/usr/sbin`.
+There is a make target that does this.
 
 ~~~~~
 sudo COG_VERSION=V2 make rpi-install
 sudo service epd-fuse start
+~~~~~
+
+The service places the files under `/dev/epd/` instead of `/tmp/epd/` so to see the files:
+
+~~~~~
 ls -l /dev/epd
 ~~~~~
 
@@ -171,7 +205,7 @@ To start the service again:
 sudo service epd-fuse start
 ~~~~~
 
-To permanently preventing EPD FUSE to start at boot (note that this command
+To permanently preventing EPD driver to start at boot (note that this command
 must be executed when the service is running, i.e. you should **not** do a `sudo service epd-fuse stop`
 first):
 
@@ -180,7 +214,7 @@ sudo COG_VERSION=V2 make rpi-remove
 ~~~~~
 
 
-# Python Demo Programs - directory "demo"
+## Python Demo Programs - directory "demo"
 
 These need the PIL library installed:
 
@@ -189,10 +223,10 @@ These need the PIL library installed:
 sudo apt-get install python-imaging
 ~~~~~
 
-The examples also need the [EPD FUSE service](#starting-epd-fuse-at-boot)
+The examples also need the [Starting EPD Driver at Boot](#starting-epd-driver-at-boot)
 
 
-## Drawing Demo
+### Drawing Demo
 
 Draw some lines, graphics and text
 
@@ -201,7 +235,7 @@ python demo/DrawDemo.py
 ~~~~~
 
 
-## Image demo
+### Image demo
 
 * Accepts a lists of image files on the command line.
 * Converts them to grey scale to ensure formats like PNG, JPEG and GIF will work.
@@ -224,7 +258,7 @@ python demo/ImageDemo.py /usr/share/scratch/Media/Costumes/Animals/d*.png
 ~~~~~
 
 
-## Image demo with button
+### Image demo with button
 > See: [How to use GPIO on Raspberry Pi](http://makezine.com/projects/tutorial-raspberry-pi-gpio-pins-and-python/)
 
 This demo works in the same way as the other Image demo but instead of
@@ -240,7 +274,7 @@ sudo python demo/ImageDemoButton.py /usr/share/scratch/Media/Costumes/Animals/d*
 ~~~~~
 
 
-## Partial Demo
+### Partial Demo
 
 Display random overlapping rectangles using partial update.  First
 argument is number of rectangle to generate before updating the EPD,
@@ -252,7 +286,7 @@ python demo/PartialDemo.py 3 20
 ~~~~~
 
 
-## Counter Demo
+### Counter Demo
 
 Display a 4 digit hex counter uses partial update to only change the
 updated digits. 
@@ -264,7 +298,7 @@ python demo/CounterDemo.py 3 20
 ~~~~~
 
 
-## Clock Demo 1
+### Clock Demo 1
 
 Displays the current time (in minutes), date and weekday. Updates
 every minute to show the current time.
@@ -276,7 +310,7 @@ python demo/Clock27.py
 ~~~~~
 
 
-## Clock Demo 2
+### Clock Demo 2
 
 Displays the current time (in secodns) and date. Updates
 every five seconds to show the current time. Note that this demo
@@ -290,7 +324,7 @@ python demo/ClockDemo.py
 ~~~~~
 
 
-## IP Address Demo
+### IP Address Demo
 
 Displays the current IP address and gateway. If the network connection
 is lost the display will instead show a *Not Connected* message until
@@ -303,7 +337,7 @@ python demo/IpAddrDemo.py
 ~~~~~
 
 
-## Barcode Demo
+### Barcode Demo
 
 Generates and displays two bar codes. See more information in the [./demo/barcode/](https://github.com/embeddedartists/gratis/tree/master/PlatformWithOS/demo/barcode/) subfolder.
 
@@ -313,9 +347,4 @@ This program must be executed from inside the `./demo/barcode/` folder and with 
 PYTHONPATH=.. python BarCodeDemo.py
 ~~~~~
 
-
-# E-Ink Panel Board Connections
-
-The [2.7 inch E-paper Display Module](http://www.embeddedartists.com/products/displays/lcd_27_epaper.php) rev D can
-be connected directly to the Raspberry Pi using a 26-pos IDC ribbon cable.
 
