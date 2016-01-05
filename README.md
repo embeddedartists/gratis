@@ -13,19 +13,22 @@ The following changes have been made:
 6. Replaced the S5813A temperature library with a LM75 library for the Arduino
 7. Modified the flash driver to handle the Winbond W25Q32 that is mounted
 
-## Sketches
+## Arduino
 
 The [Sketches](Sketches) folder contain example programs that will compile and run on the following platforms
 
 1. Arduino Leonardo using the [Arduino](http://arduino.cc) IDE
 2. Arduino Uno using the [Arduino](http://arduino.cc) IDE
+3. Arduino Mega 2560 using the [Arduino](http://arduino.cc) IDE (untested)
 
-## PlatformWithOS
+Documentation for the Arduino code can be found [here](Sketches).
+
+## Raspberry Pi
 
 The [PlatformWithOS](PlatformWithOS) folder contain contains an example driver and Python demo programs that can be
-compiled and run on:
+compiled and run on [Raspberry Pi](http://www.raspberrypi.org/).
 
-1. [Raspberry Pi](http://www.raspberrypi.org/)
+Documentation for the Raspberry Pi can be found [here](PlatformWithOS).
 
 ======
 
