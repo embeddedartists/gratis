@@ -429,6 +429,61 @@ static uint32_t isRaspberryPi2() {
    return lastResult;
 }
 
+//Copy of ther previous funciton, adding the posibility of detecting a Rpi3 system
+//It makes the same search, but on the string BCM2835
+static uint32_t isRaspberryPi3() {
+   FILE* fp;
+   char buffer[1024*2];
+   size_t bytes_read;
+   char* match;
+   bool result = 0;
+   static int lastResult = -1;
+
+   /* Avoid testing this over and over */
+   if (lastResult == -1) {
+      /* Read the entire contents of /proc/cpuinfo into the buffer.  */
+      fp = fopen ("/proc/cpuinfo", "r");
+      bytes_read = fread (buffer, 1, sizeof (buffer), fp);
+      fclose (fp);
+
+      do {
+         /* Bail if read failed or if buffer isn't big enough.  */
+         if (bytes_read == 0 || bytes_read == sizeof (buffer)) {
+            //warn("wrong amount of data read");
+            break;
+         }
+
+         /* NUL-terminate the text.  */
+         buffer[bytes_read] = '\0';
+
+         /* Locate the line that starts with "cpu MHz".  */
+         match = strstr (buffer, "Hardware");
+         if (match == NULL) {
+            //warn("no Hardware info in /proc/cpuinfo");
+            break;
+         }
+
+         match = strstr (match, ":");
+         if (match == NULL) {
+            //warn("no ':' after Hardware in /proc/cpuinfo");
+            break;
+         }
+
+         /* Parse the line to extract the BCM information.  */
+         if (strncmp(match, ": BCM2835", 9) != 0) {
+            //warn("'%s' is not ': BCM2835'", match);
+            break;
+         }
+
+         /* Found a version 2 */
+         result = 1;
+      } while(0);
+
+      lastResult = result;
+   }
+
+   return lastResult;
+}
 
 // setup a map to a peripheral offset
 // false => error
@@ -437,6 +492,9 @@ static bool create_rw_map(volatile uint32_t **map, int fd, uint32_t offset) {
 
 	if (isRaspberryPi2()) {
 		warn("Running on Raspberry Pi 2");
+		m = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, BCM_PERIPERALS_ADDRESS_RPI2 + offset);
+	} else if (isRaspberryPi3()) {
+		warn("Running on Raspberry Pi 3");
 		m = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, BCM_PERIPERALS_ADDRESS_RPI2 + offset);
 	} else {
 		warn("Running on Raspberry Pi 1");
